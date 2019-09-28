@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head></h:head>
+<body>
+
+	<ui:composition template="/WEB-INF/templates/master.xhtml">
+		<ui:define name="content">
+			<h:form id="frm">
+				<p:growl id="men" />
+				<p:toolbar>
+					<f:facet name="right">
+						<p:commandButton value="Guardar" icon="icon_save" 
+							process="@this :frm:panMedicalConsultationItem :frm:panMedicalConsultation" 
+							actionListener="#{medicalConsultationController.saveMedicalConsultation()}"
+							update=":frm:men :frm:panMedicalConsultationItem :frm:panMedicalConsultation :frm:datMedicalConsultationItem"
+							/>
+					</f:facet>
+
+					<f:facet name="left">
+						<p:outputLabel value="Consulta Medica" />
+					</f:facet>
+
+				</p:toolbar>
+				<br></br>
+
+				<p:panelGrid id="panMedicalConsultation" columns="2" style="width:100%">
+
+					<p:outputLabel value="Paciente" />
+					<p:inputText id="txtPaciente" 
+						value="#{medicalConsultationController.medicalConsultation.patient}"
+						required="true" />
+				</p:panelGrid>
+
+				<br></br>
+
+				<p:toolbar>
+					<f:facet name="right">
+						<p:commandButton value="Tratamientos/Diagnosticos"
+							icon="ui-icon-plus"
+							onclick="PF('dgMedicalConsultationItem').show();" />
+						<p:commandButton value="Examenes Medicos"
+							icon="ui-icon-plus" 
+							onclick="PF('dgMedicalExam').show();" />
+					</f:facet>
+				</p:toolbar>
+
+
+				<p:dataTable id="datMedicalConsultationItem"
+				   value="#{medicalConsultationController.medicalConsultationItems}"
+				   var="medicalConsultationItem">
+						<p:column headerText="Tratamiento">
+							<p:outputLabel value="#{medicalConsultationItem.treatment}"/>
+						</p:column>
+						<p:column headerText="Diagnostico">
+							<p:outputLabel value="#{medicalConsultationItem.diagnostic}" />
+						</p:column>
+				</p:dataTable>
+
+
+				<p:dataTable id="datMedicalExam"
+					value="#{medicalConsultationController.medicalExamItems}"
+					var="medicalExamItem">
+						<p:column headerText="Examen">
+							<p:outputLabel value="#{medicalExamItem.name}" />
+						</p:column>
+				</p:dataTable>
+
+
+
+				<p:dialog widgetVar="dgMedicalConsultationItem" 
+					header="Agregar Tratamiento/Diagnostico" width="450"
+					height="400">
+					<p:toolbar>
+						<f:facet name="right">
+							<p:commandButton value="Agregar"
+								process="@this :frm:panMedicalConsultationItem"
+								actionListener="#{medicalConsultationController.addMedicalConsultationItem()}"
+								update=":frm:panMedicalConsultationItem :frm:datMedicalConsultationItem :frm:men"
+								oncomplete="PF('dgMedicalConsultationItem').hide();" />
+							<p:commandButton value="Cancelar" process="@this"
+								update=":frm:panMedicalConsultationItem"
+								oncomplete="PF('dgMedicalConsultationItem').hide();" />
+						</f:facet>
+					</p:toolbar>
+					<br />
+
+					<p:panelGrid id="panMedicalConsultationItem" columns="2" style="width:100%">
+
+						<p:outputLabel value="Diagnostico" for="txtDiagnostico" />
+						<p:inputTextarea id="txtDiagnostico"
+							value="#{medicalConsultationController.medicalConsultationItem.diagnostic}" />
+
+						<p:outputLabel value="Tratamiento" for="txtTratamiento" />
+						<p:inputTextarea id="txtTratamiento"
+							value="#{medicalConsultationController.medicalConsultationItem.treatment}" />
+					</p:panelGrid>
+					
+				</p:dialog>
+
+
+
+
+
+				<p:dialog widgetVar="dgMedicalExam" 
+					header="Agregar Examenes Medicos" width="450"
+					height="400">
+					<p:toolbar>
+						<f:facet name="right">
+							<p:commandButton value="Agregar"
+								process="@this :frm:panMedicalExam"
+								actionListener="#{medicalConsultationController.addMedicalExamenItem()}"
+								update=":frm:panMedicalExam :frm:datMedicalExam :frm:men"
+								oncomplete="PF('dgMedicalExam').hide();" />
+							<p:commandButton value="Cancelar" process="@this"
+								update=":frm:panMedicalExam"
+								oncomplete="PF('dgMedicalExam').hide();" />
+						</f:facet>
+					</p:toolbar>
+					<br />
+
+					<p:panelGrid id="panMedicalExam" columns="2" style="width:100%">
+
+						<p:outputLabel value="Examenes" for="cboExamenes" />
+
+						<p:selectOneMenu id="cboExamenes" required="true" effect="drop"
+							value="#{medicalConsultationController.medicalExam}"
+							converter="omnifaces.SelectItemsConverter" filter="true"
+							filterMatchMode="contains">
+							
+							<f:selectItems
+								value="#{medicalConsultationController.medicalExams}"
+								var="medicalExam" itemLabel="#{medicalExam.name}"
+								itemValue="#{medicalExam}" />
+
+						</p:selectOneMenu>
+
+					</p:panelGrid>
+				</p:dialog>
+
+
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</body>
+</html>
