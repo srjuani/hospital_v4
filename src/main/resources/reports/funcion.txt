@@ -1,0 +1,26 @@
+
+CREATE OR REPLACE FUNCTION fn_QuantityProductBySupplier() 
+ RETURNS TABLE (
+ supplier TEXT,
+ quantityProducts INT,
+ product TEXT
+) 
+AS $$
+DECLARE 
+    var_r record;
+BEGIN
+FOR var_r IN(
+    SELECT s.id as id, s.name as supplier, (COUNT(p.id)::int) as quantity,
+    (CASE WHEN string_agg(p.name, ',') IS NULL THEN '-' ELSE string_agg(p.name, ',') END) as product 
+    FROM suppliers s
+    LEFT JOIN products p ON p.supplier_id = s.id
+    GROUP BY s.id, s.name ORDER BY s.id
+    )  
+ LOOP
+         supplier := var_r.supplier;
+         quantityProducts := var_r.quantity;
+        product := var_r.product;
+        RETURN NEXT;
+ END LOOP;
+END; $$ 
+LANGUAGE 'plpgsql';
